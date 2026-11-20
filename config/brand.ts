@@ -110,7 +110,7 @@ export const brand = {
   partner: { name: "Great Run Ethiopia" } as Brand["partner"],
   theme: "station",
   colors: { themeColor: "#0B2D5B", backgroundColor: "#0B2D5B" },
-  social: {},
+  social: {} as Brand["social"],
   promo: {
     eyebrow: "Refill. Refresh. Repeat.",
     headline: "Crystal-clear water in seconds.",
