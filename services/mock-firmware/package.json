@@ -1,0 +1,6 @@
+{
+  "name": "mock-firmware",
+  "private": true,
+  "type": "module",
+  "description": "Standalone mock dispenser firmware + controller that talks to the real MQTT broker."
+}

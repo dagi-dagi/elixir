@@ -1,0 +1,145 @@
+/*
+ * Theme tokens.
+ *
+ * Every color, radius and shadow in the UI comes from these variables, exposed
+ * to Tailwind in `globals.css` (e.g. `bg-primary`, `text-muted-foreground`).
+ *
+ * Switch theme:  set `theme` in `config/brand.ts`.
+ * Add a theme:   copy a block below, rename it, and add the name to `config/themes.ts`.
+ */
+
+/*
+ * Kiosk scene tokens (the animated 53:94 display). Defaults below; any theme
+ * may override them. The scene is always a dark, high-contrast stage.
+ */
+:root {
+  --stage-from: #0b2d5b;
+  --stage-to: #003d50;
+  --stage-backdrop: #021521;
+  --stage-fg: #ffffff;
+  --stage-muted: #cfeaf7;
+  --stage-primary: #00aeef; /* water, glow, ring start */
+  --stage-accent: #a6ce39; /* success, brackets, ring end */
+  --stage-water-top: #3cd2ff;
+  --stage-water-bottom: #006ec8;
+}
+
+/* Default theme: navy/teal with cyan + lime accents. */
+[data-theme="station"] {
+  color-scheme: dark;
+
+  --page-bg: linear-gradient(160deg, #0b2d5b 10%, #003d50 100%);
+  --background: #08263f;
+  --surface: #0f3658;
+  --surface-muted: #15466b;
+  --foreground: #ffffff;
+  --muted-foreground: #cfeaf7;
+  --border: rgb(255 255 255 / 0.14);
+
+  --primary: #00aeef;
+  --primary-hover: #38c4f5;
+  --primary-foreground: #03213a;
+  --accent: #a6ce39;
+  --ring: #a6ce39;
+
+  --success: #a6ce39;
+  --danger: #ff8f8f;
+  --danger-soft: rgb(255 143 143 / 0.14);
+
+  --water-top: #3cd2ff;
+  --water-bottom: #006ec8;
+  --glow-1: rgb(0 174 239 / 0.22);
+  --glow-2: rgb(166 206 57 / 0.14);
+
+  --radius: 1.25rem;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.25), 0 18px 48px -18px rgb(0 0 0 / 0.55);
+}
+
+/* Fallback so the app is styled even if data-theme is missing. */
+:root:not([data-theme]),
+[data-theme="aqua"] {
+  color-scheme: light;
+
+  --background: #f3f9fd;
+  --surface: #ffffff;
+  --surface-muted: #e7f2f9;
+  --foreground: #0b2536;
+  --muted-foreground: #48606f;
+  --border: #d3e4ee;
+
+  --primary: #0369a1;
+  --primary-hover: #075985;
+  --primary-foreground: #ffffff;
+  --accent: #0891b2;
+  --ring: #0ea5e9;
+
+  --success: #047857;
+  --danger: #b91c1c;
+  --danger-soft: #fee2e2;
+
+  --water-top: #7dd3fc;
+  --water-bottom: #0284c7;
+  --glow-1: rgb(56 189 248 / 0.28);
+  --glow-2: rgb(45 212 191 / 0.22);
+
+  --radius: 1.5rem;
+  --shadow-card: 0 1px 2px rgb(11 37 54 / 0.04), 0 12px 40px -12px rgb(3 105 161 / 0.18);
+}
+
+[data-theme="midnight"] {
+  color-scheme: dark;
+
+  --background: #06111c;
+  --surface: #0d1c2b;
+  --surface-muted: #132739;
+  --foreground: #e6f1f8;
+  --muted-foreground: #97afc2;
+  --border: #1f3851;
+
+  --primary: #38bdf8;
+  --primary-hover: #7dd3fc;
+  --primary-foreground: #03121f;
+  --accent: #2dd4bf;
+  --ring: #7dd3fc;
+
+  --success: #34d399;
+  --danger: #f87171;
+  --danger-soft: rgb(248 113 113 / 0.12);
+
+  --water-top: #67e8f9;
+  --water-bottom: #0369a1;
+  --glow-1: rgb(56 189 248 / 0.18);
+  --glow-2: rgb(45 212 191 / 0.14);
+
+  --radius: 1.5rem;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 16px 48px -16px rgb(0 0 0 / 0.6);
+}
+
+[data-theme="lagoon"] {
+  color-scheme: light;
+
+  --background: #f2fbf9;
+  --surface: #ffffff;
+  --surface-muted: #e2f5f1;
+  --foreground: #0a2b28;
+  --muted-foreground: #47635f;
+  --border: #cde8e2;
+
+  --primary: #0f766e;
+  --primary-hover: #115e59;
+  --primary-foreground: #ffffff;
+  --accent: #0d9488;
+  --ring: #14b8a6;
+
+  --success: #047857;
+  --danger: #b91c1c;
+  --danger-soft: #fee2e2;
+
+  --water-top: #5eead4;
+  --water-bottom: #0f766e;
+  --glow-1: rgb(45 212 191 / 0.28);
+  --glow-2: rgb(56 189 248 / 0.18);
+
+  --radius: 1.25rem;
+  --shadow-card: 0 1px 2px rgb(10 43 40 / 0.04), 0 12px 40px -12px rgb(15 118 110 / 0.2);
+}

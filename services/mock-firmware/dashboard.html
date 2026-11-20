@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mock Firmware</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #07111c; --surface: #0e1c2b; --surface-2: #13263a; --border: #1f3851;
+    --fg: #e6f1f8; --muted: #93acc0; --primary: #38bdf8; --accent: #2dd4bf;
+    --ok: #34d399; --warn: #fbbf24; --danger: #f87171;
+    --water-top: #67e8f9; --water-bottom: #0284c7;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 16px 24px; background: rgb(7 17 28 / .85); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+  h1 { margin: 0; font-size: 18px; letter-spacing: -.01em; }
+  h1 small { color: var(--muted); font-weight: 500; margin-left: 6px; }
+  .spacer { flex: 1; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-weight: 600; font-size: 12px; white-space: nowrap; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .dot.ok { background: var(--ok); box-shadow: 0 0 0 0 rgb(52 211 153 / .6); animation: ping 2s infinite; }
+  .dot.warn { background: var(--warn); animation: blink 1s infinite; }
+  .dot.bad { background: var(--danger); }
+  @keyframes ping { 70% { box-shadow: 0 0 0 8px rgb(52 211 153 / 0); } 100% { box-shadow: 0 0 0 0 rgb(52 211 153 / 0); } }
+  @keyframes blink { 50% { opacity: .35; } }
+  .meta { color: var(--muted); font-size: 12px; }
+  .switch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; font-weight: 600; }
+  .switch input { appearance: none; width: 36px; height: 20px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); position: relative; cursor: pointer; transition: background .2s; margin: 0; }
+  .switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--muted); transition: transform .2s, background .2s; }
+  .switch input:checked { background: rgb(56 189 248 / .25); border-color: var(--primary); }
+  .switch input:checked::after { transform: translateX(16px); background: var(--primary); }
+  main { padding: 24px; display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr); max-width: 1400px; margin: 0 auto; }
+  @media (min-width: 1100px) { main { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; } }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: grid; gap: 14px; animation: rise .4s ease both; transition: border-color .3s; }
+  .card[data-phase="pouring"] { border-color: rgb(56 189 248 / .6); }
+  .card[data-phase="awaiting_cup"] { border-color: rgb(251 191 36 / .5); }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+  .card-head { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+  .card-head h2 { margin: 0; font-size: 16px; }
+  .phase { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; background: var(--surface-2); color: var(--muted); }
+  .phase[data-phase="session"] { background: rgb(56 189 248 / .15); color: var(--primary); }
+  .phase[data-phase="awaiting_cup"] { background: rgb(251 191 36 / .15); color: var(--warn); animation: blink 1.4s infinite; }
+  .phase[data-phase="pouring"] { background: rgb(45 212 191 / .15); color: var(--accent); }
+  .phase[data-phase="paused"] { background: rgb(251 191 36 / .15); color: var(--warn); }
+  .card[data-phase="paused"] { border-color: rgb(251 191 36 / .6); }
+  .body { display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: end; }
+  .rig { position: relative; height: 150px; }
+  .nozzle { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 44px; height: 14px; border-radius: 0 0 8px 8px; background: #3b5168; }
+  .stream { position: absolute; top: 14px; left: 50%; width: 5px; margin-left: -2.5px; bottom: 6px; border-radius: 3px; background: repeating-linear-gradient(180deg, var(--water-top) 0 8px, var(--water-bottom) 8px 16px); animation: flow .4s linear infinite; opacity: 0; transition: opacity .3s; }
+  .card[data-phase="pouring"] .stream { opacity: .9; }
+  @keyframes flow { to { background-position: 0 16px; } }
+  .cup { position: absolute; bottom: 0; left: 50%; width: 64px; height: 92px; margin-left: -32px; border-radius: 4px 4px 18px 18px; border: 3px solid rgb(230 241 248 / .3); overflow: hidden; background: rgb(230 241 248 / .05); transition: transform .45s cubic-bezier(.2,.7,.2,1), opacity .45s; }
+  .cup[data-present="false"] { transform: translateX(-90px); opacity: 0; }
+  .target { position: absolute; bottom: 0; left: 50%; width: 64px; height: 92px; margin-left: -32px; border-radius: 4px 4px 18px 18px; border: 2px dashed rgb(147 172 192 / .35); }
+  .water { position: absolute; left: 0; right: 0; bottom: 0; height: 0; background: linear-gradient(180deg, var(--water-top), var(--water-bottom)); transition: height .2s linear; }
+  .stats { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0; font-size: 13px; }
+  .stats dt { color: var(--muted); }
+  .stats dd { margin: 0; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+  .bar > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--water-bottom), var(--water-top)); transition: width .2s linear; }
+  .result { font-size: 12px; color: var(--muted); min-height: 1.4em; }
+  .result.ok { color: var(--ok); } .result.bad { color: var(--danger); }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  button { font: inherit; font-weight: 600; font-size: 13px; padding: 7px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--fg); cursor: pointer; transition: background .15s, border-color .15s, transform .1s; }
+  button:hover:not(:disabled) { border-color: var(--primary); }
+  button:active:not(:disabled) { transform: scale(.97); }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  button.primary { background: var(--primary); border-color: var(--primary); color: #03121f; }
+  button.danger:hover:not(:disabled) { border-color: var(--danger); color: var(--danger); }
+  button:focus-visible, select:focus-visible, .switch input:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  section.log { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; max-height: calc(100vh - 120px); min-height: 320px; position: sticky; top: 88px; }
+  .log-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  .log-head h2 { margin: 0; font-size: 14px; }
+  select { font: inherit; font-size: 12px; background: var(--surface-2); color: var(--fg); border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; }
+  ol { list-style: none; margin: 0; padding: 8px 0; overflow: auto; font: 12px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; }
+  li { padding: 4px 16px; display: grid; grid-template-columns: 64px 34px 1fr; gap: 8px; border-left: 2px solid transparent; animation: rise .25s ease both; }
+  li .t { color: var(--muted); } li .k { font-weight: 700; }
+  li[data-kind="in"] { border-color: var(--primary); } li[data-kind="in"] .k { color: var(--primary); }
+  li[data-kind="out"] { border-color: var(--accent); } li[data-kind="out"] .k { color: var(--accent); }
+  li[data-kind="warn"] { border-color: var(--warn); } li[data-kind="warn"] .k { color: var(--warn); }
+  li .m { word-break: break-word; } li .topic { color: var(--muted); display: block; }
+  .empty { color: var(--muted); padding: 16px; text-align: center; }
+  @media (prefers-reduced-motion: reduce) { *, ::before, ::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Mock firmware <small>dispenser simulator</small></h1>
+  <span class="pill" id="broker" role="status"><span class="dot"></span><span>Connecting…</span></span>
+  <span class="meta" id="broker-meta"></span>
+  <span class="spacer"></span>
+  <label class="switch" title="Simulate the customer placing (and later removing) their cup automatically">
+    <input type="checkbox" id="auto-cup" />
+    <span id="auto-cup-label">Auto-place cup</span>
+  </label>
+  <span class="pill" id="stream" role="status"><span class="dot"></span><span>Dashboard offline</span></span>
+</header>
+
+<main>
+  <section aria-label="Dispensers" class="grid" id="units"></section>
+  <section class="log" aria-labelledby="log-title">
+    <div class="log-head">
+      <h2 id="log-title">Message log</h2>
+      <label class="meta">Show
+        <select id="log-filter"><option value="">all dispensers</option></select>
+      </label>
+    </div>
+    <ol id="log" aria-live="off"></ol>
+  </section>
+</main>
+
+<template id="unit-tpl">
+  <article class="card">
+    <div class="card-head">
+      <div><h2 data-f="name"></h2><div class="meta" data-f="location"></div></div>
+      <span class="phase" data-f="phase"></span>
+    </div>
+    <div class="body">
+      <div class="rig" aria-hidden="true">
+        <div class="nozzle"></div>
+        <div class="target"></div>
+        <div class="cup" data-f="cup"><div class="water" data-f="water"></div></div>
+        <div class="stream"></div>
+      </div>
+      <dl class="stats">
+        <dt>QR token</dt><dd data-f="token">—</dd>
+        <dt>Session</dt><dd data-f="session">—</dd>
+        <dt>Target</dt><dd data-f="target">—</dd>
+        <dt>Poured</dt><dd data-f="poured">—</dd>
+        <dt>Cup</dt><dd data-f="cupText">—</dd>
+        <dt>In phase</dt><dd data-f="since">—</dd>
+        <dt>Flow</dt><dd data-f="flow">—</dd>
+      </dl>
+    </div>
+    <div class="bar" role="progressbar" aria-label="Pour progress" aria-valuemin="0" aria-valuemax="100" data-f="bar"><div></div></div>
+    <div class="result" data-f="result"></div>
+    <div class="actions">
+      <button data-action="cup" class="primary" title="Removing the cup while pouring pauses the refill">Place cup</button>
+      <button data-action="fault" class="danger">Trigger fault</button>
+      <button data-action="reset">Reset</button>
+    </div>
+  </article>
+</template>
+
+<script>
+(() => {
+  const PHASES = { idle: "Idle", session: "Session open", awaiting_cup: "Waiting for cup", pouring: "Pouring", paused: "Paused" };
+  const unitsEl = document.getElementById("units");
+  const logEl = document.getElementById("log");
+  const filterEl = document.getElementById("log-filter");
+  const autoCupEl = document.getElementById("auto-cup");
+  const tpl = document.getElementById("unit-tpl");
+  const cards = new Map();
+  let units = [];
+  let logs = [];
+  let clockSkew = 0;
+
+  const fmtL = (n) => (n == null ? "—" : `${Number(n).toFixed(n < 10 ? 2 : 1)} L`);
+  const ago = (t) => {
+    const s = Math.max(0, Math.round((Date.now() - clockSkew - t) / 1000));
+    return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m ${s % 60}s`;
+  };
+  const time = (t) => new Date(t).toLocaleTimeString([], { hour12: false });
+
+  function setPill(el, cls, text) {
+    el.querySelector(".dot").className = `dot ${cls}`;
+    el.lastElementChild.textContent = text;
+  }
+
+  async function post(path, body) {
+    try {
+      const res = await fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body ?? {}) });
+      if (!res.ok) throw new Error((await res.json()).error || res.statusText);
+    } catch (err) {
+      alert(`Action failed: ${err.message}`);
+    }
+  }
+
+  function cardFor(u) {
+    let card = cards.get(u.id);
+    if (card) return card;
+    card = tpl.content.firstElementChild.cloneNode(true);
+    card.dataset.id = u.id;
+    card.querySelector("[data-f=name]").textContent = u.name;
+    card.querySelector("[data-f=location]").textContent = `${u.location} · id ${u.id}`;
+    card.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn || btn.disabled) return;
+      const unit = units.find((x) => x.id === u.id);
+      const action = btn.dataset.action === "cup" ? (unit.cupPresent ? "remove-cup" : "place-cup") : btn.dataset.action;
+      post(`/api/dispensers/${encodeURIComponent(u.id)}/${action}`);
+    });
+    unitsEl.append(card);
+    cards.set(u.id, card);
+    const opt = new Option(u.name, u.id);
+    filterEl.append(opt);
+    return card;
+  }
+
+  function renderUnit(u) {
+    const c = cardFor(u);
+    const f = (k) => c.querySelector(`[data-f=${k}]`);
+    c.dataset.phase = u.phase;
+    f("phase").dataset.phase = u.phase;
+    f("phase").textContent = PHASES[u.phase] ?? u.phase;
+    f("token").textContent = u.qrToken ? u.qrToken.slice(0, 8) + "…" : "none (used)";
+    f("token").title = u.qrToken ?? "No valid token — the kiosk shows a new one when it returns to its QR screen";
+    f("session").textContent = u.sessionId ? u.sessionId.slice(0, 8) + "…" : "—";
+    f("session").title = u.sessionId ?? "";
+    f("target").textContent = fmtL(u.targetLitres);
+    f("poured").textContent = u.phase === "idle" && !u.pouredLitres ? "—" : fmtL(u.pouredLitres);
+    f("cupText").textContent = u.cupPresent ? "Detected" : "Empty";
+    f("flow").textContent = `${u.flowRate} L/s`;
+    f("since").dataset.t = u.phaseSince;
+    f("since").textContent = ago(u.phaseSince);
+    f("cup").dataset.present = String(u.cupPresent);
+    const pct = u.targetLitres ? Math.min(100, (u.pouredLitres / u.targetLitres) * 100) : (u.phase === "idle" && u.lastResult?.ok ? 100 : 0);
+    f("water").style.height = `${u.cupPresent ? pct : 0}%`;
+    f("bar").firstElementChild.style.width = `${pct}%`;
+    f("bar").setAttribute("aria-valuenow", String(Math.round(pct)));
+    const r = u.lastResult;
+    f("result").className = `result ${r ? (r.ok ? "ok" : "bad") : ""}`;
+    f("result").textContent = r ? `${r.ok ? "✓" : "✕"} ${r.message} · ${time(r.at)}` : "No pours yet";
+    const cupBtn = c.querySelector("[data-action=cup]");
+    cupBtn.textContent = u.cupPresent ? "Remove cup" : "Place cup";
+    cupBtn.classList.toggle("primary", !u.cupPresent && (u.phase === "awaiting_cup" || u.phase === "paused"));
+    c.querySelector("[data-action=fault]").disabled = u.phase === "idle";
+  }
+
+  function renderState(s) {
+    clockSkew = Date.now() - s.serverTime;
+    units = s.units;
+    units.forEach(renderUnit);
+    const b = s.broker;
+    const map = { connected: ["ok", "Broker connected"], connecting: ["warn", "Connecting…"], reconnecting: ["warn", "Reconnecting…"], offline: ["bad", "Broker offline"], error: ["bad", "Broker error"] };
+    const [cls, text] = map[b.state] ?? ["", b.state];
+    setPill(document.getElementById("broker"), cls, text);
+    document.getElementById("broker-meta").textContent = `${b.url} · ${b.clientId}${b.lastError ? " · " + b.lastError : ""}`;
+    autoCupEl.checked = s.autoCup;
+    document.getElementById("auto-cup-label").textContent = `Auto-place cup (${(s.cupDelayMs / 1000).toFixed(1)}s)`;
+  }
+
+  function renderLogs() {
+    const only = filterEl.value;
+    const rows = logs.filter((l) => !only || l.dispenserId === only).slice(-150).reverse();
+    if (!rows.length) { logEl.innerHTML = '<div class="empty">No messages yet</div>'; return; }
+    logEl.replaceChildren(...rows.map((l) => {
+      const li = document.createElement("li");
+      li.dataset.kind = l.kind;
+      const t = document.createElement("span"); t.className = "t"; t.textContent = time(l.at);
+      const k = document.createElement("span"); k.className = "k"; k.textContent = { in: "IN", out: "OUT", info: "·", warn: "!" }[l.kind];
+      const m = document.createElement("span"); m.className = "m";
+      if (l.topic) { const tp = document.createElement("span"); tp.className = "topic"; tp.textContent = l.topic; m.append(tp); }
+      m.append(document.createTextNode((l.dispenserId && !l.topic ? `[${l.dispenserId}] ` : "") + l.message));
+      li.append(t, k, m);
+      return li;
+    }));
+  }
+
+  autoCupEl.addEventListener("change", () => post("/api/auto-cup", { enabled: autoCupEl.checked }));
+  filterEl.addEventListener("change", renderLogs);
+  setInterval(() => document.querySelectorAll("[data-f=since]").forEach((el) => { if (el.dataset.t) el.textContent = ago(Number(el.dataset.t)); }), 1000);
+
+  const streamPill = document.getElementById("stream");
+  function connect() {
+    const es = new EventSource("/events");
+    es.addEventListener("open", () => setPill(streamPill, "ok", "Live"));
+    es.addEventListener("state", (e) => renderState(JSON.parse(e.data)));
+    es.addEventListener("logs", (e) => { logs = JSON.parse(e.data); renderLogs(); });
+    es.addEventListener("log", (e) => { logs.push(JSON.parse(e.data)); if (logs.length > 300) logs.shift(); renderLogs(); });
+    es.addEventListener("error", () => setPill(streamPill, "bad", "Dashboard offline — retrying"));
+  }
+  connect();
+})();
+</script>
+</body>
+</html>

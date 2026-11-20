@@ -6,10 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "firmware": "node --env-file-if-exists=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON services/mock-firmware/main.ts",
+    "typecheck": "tsc --noEmit && tsc -p services/mock-firmware"
   },
   "dependencies": {
+    "jsqr": "^1.4.0",
+    "mqtt": "^5.16.1",
     "next": "16.4.6",
+    "qrcode.react": "^4.2.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
