@@ -20,7 +20,7 @@ export async function generateMetadata({
   if (!dispenser) return { title: "Dispenser not found" };
   return {
     title: `Start ${dispenser.name}`,
-    description: `${brand.tagline} Connect to ${dispenser.name} (${dispenser.location}) and refill in seconds.`,
+    description: `${brand.tagline} Connect to ${dispenser.name} and refill in seconds.`,
     robots: { index: false, follow: false },
   };
 }

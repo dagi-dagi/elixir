@@ -91,7 +91,7 @@ function Session({ dispenser, token }: { dispenser: DispenserDefinition; token: 
           tone="neutral"
           icon={<PhoneIcon className="size-10 animate-pulse" />}
           title={brand.copy.phoneConnectingTitle}
-          message={`${dispenser.name} · ${dispenser.location}`}
+          message={dispenser.name}
           busy
         />
       );

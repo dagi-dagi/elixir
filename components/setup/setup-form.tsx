@@ -69,10 +69,7 @@ export function SetupForm() {
                 >
                   {checked ? <CheckIcon className="size-10" /> : d.id}
                 </span>
-                <span className="min-w-0">
-                  <span className="block text-3xl font-semibold">{d.name}</span>
-                  <span className="block truncate text-2xl text-muted-foreground">{d.location}</span>
-                </span>
+                <span className="min-w-0 text-3xl font-semibold">{d.name}</span>
                 {current?.id === d.id && (
                   <span className="ml-auto rounded-full bg-surface-muted px-4 py-1.5 text-lg font-medium text-muted-foreground">
                     Current

@@ -8,27 +8,20 @@ export interface DispenserDefinition {
   id: string;
   /** Human-readable name shown on screen. */
   name: string;
-  location: string;
   /** Selectable amounts in litres. Falls back to `DEFAULT_LITRE_OPTIONS`. */
   litreOptions?: readonly number[];
   /** Approximate flow rate, used to estimate progress when the device doesn't report it. */
   flowRateLitresPerSecond?: number;
 }
 
-export const DEFAULT_LITRE_OPTIONS = [0.5, 1, 2, 5, 10, 20] as const;
+export const DEFAULT_LITRE_OPTIONS = [1, 0.5] as const;
 export const DEFAULT_FLOW_RATE_LITRES_PER_SECOND = 0.5;
 
 export const dispensers: readonly DispenserDefinition[] = [
-  { id: "1", name: "Dispenser 1", location: "Main entrance" },
-  { id: "2", name: "Dispenser 2", location: "Food court" },
-  { id: "3", name: "Dispenser 3", location: "Gym — level 2" },
-  {
-    id: "4",
-    name: "Dispenser 4",
-    location: "Parking — bulk refill",
-    litreOptions: [5, 10, 20],
-    flowRateLitresPerSecond: 1,
-  },
+  { id: "1", name: "Dispenser 1" },
+  { id: "2", name: "Dispenser 2" },
+  { id: "3", name: "Dispenser 3" },
+  { id: "4", name: "Dispenser 4" },
 ];
 
 export function findDispenser(id: string | null | undefined) {
@@ -41,5 +34,7 @@ export function litreOptionsFor(dispenser: DispenserDefinition) {
 }
 
 export function flowRateFor(dispenser: DispenserDefinition) {
-  return dispenser.flowRateLitresPerSecond ?? DEFAULT_FLOW_RATE_LITRES_PER_SECOND;
+  return (
+    dispenser.flowRateLitresPerSecond ?? DEFAULT_FLOW_RATE_LITRES_PER_SECOND
+  );
 }

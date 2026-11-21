@@ -186,7 +186,7 @@
     card = tpl.content.firstElementChild.cloneNode(true);
     card.dataset.id = u.id;
     card.querySelector("[data-f=name]").textContent = u.name;
-    card.querySelector("[data-f=location]").textContent = `${u.location} · id ${u.id}`;
+    card.querySelector("[data-f=location]").textContent = `id ${u.id}`;
     card.addEventListener("click", (e) => {
       const btn = e.target.closest("button[data-action]");
       if (!btn || btn.disabled) return;

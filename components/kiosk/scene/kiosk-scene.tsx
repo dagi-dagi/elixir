@@ -94,12 +94,7 @@ export function KioskScene() {
           {brand.partner ? (
             <PartnerMark className="text-[1.625rem]" />
           ) : (
-            <span className="text-right text-[1.25rem] uppercase leading-tight">
-              {dispenser.name}
-              <span className="block text-[0.95rem] font-semibold tracking-[0.12em] text-[var(--stage-muted)]">
-                {dispenser.location}
-              </span>
-            </span>
+            <span className="text-[1.25rem] uppercase">{dispenser.name}</span>
           )}
           <span
             role="status"

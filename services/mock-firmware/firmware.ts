@@ -30,7 +30,6 @@ export type UnitPhase = "idle" | "session" | "awaiting_cup" | "pouring" | "pause
 export interface UnitSnapshot {
   id: string;
   name: string;
-  location: string;
   phase: UnitPhase;
   phaseSince: number;
   sessionId: string | null;
@@ -394,7 +393,6 @@ export class Firmware extends EventEmitter {
     return [...this.units.values()].map((u) => ({
       id: u.def.id,
       name: u.def.name,
-      location: u.def.location,
       phase: u.phase,
       phaseSince: u.phaseSince,
       sessionId: u.sessionId,
