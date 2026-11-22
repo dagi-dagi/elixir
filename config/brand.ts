@@ -103,8 +103,10 @@ export const brand = {
   locale: "en_US",
   keywords: ["ethio telecom", "hydration station", "water dispenser", "refill", "plastic free"],
   wordmark: { text: "ethio", accent: "telecom" },
-  // e.g. { src: "/brand/ethio-telecom.svg", alt: "ethio telecom", width: 240, height: 64 }
-  logo: null as Brand["logo"],
+  // Official logo from https://www.ethiotelecom.et/logos (Et-logo.png; the site has no SVG).
+  // "-light" = same logo with the black lettering in white, for the dark "station" theme.
+  // On a light theme use "/brand/ethio-telecom.png" (original colours) instead.
+  logo: { src: "/brand/ethio-telecom-light.png", alt: "ethio telecom", width: 1200, height: 299 } as Brand["logo"],
   icon: "/brand/icon.svg",
   // Shown top-right on the kiosk and the phone. Add `logo: "/brand/partner.svg"` to use an image.
   partner: { name: "Great Run Ethiopia" } as Brand["partner"],
